@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -65,64 +65,50 @@ namespace AK_HighSchool_App.screen
 
             if (CBteacherscourses.Checked)
             {
-                List<teacher> Teacher = db.Teachers.ToList();
-                List<int> teacherR1 = new List<int>();
-                string input2 = comteacherscourses.SelectedItem.ToString();
-                foreach (var teach in Teacher)
-                {                                 //Teacher's FirsName + '' + Teacher's LastName              Add teacher's id to the List
-                    if ($"{teach.teacherFirstName.ToString()} {teach.teacherLastName.ToString()}" == input2) teacherR1.Add(teach.teacherID);
+                int tea = db.Teachers.Where(x => (x.teacherFirstName + " " + x.teacherLastName) == comteacherscourses.SelectedItem.ToString()).Select(y => y.teacherID).FirstOrDefault();
 
-                }
-                List<Relation> teacherRstudents = db.Relations.ToList();
-                List<int> teacherR2 = new List<int>();
-                for (int i = 0; i < teacherR1.Count; i++)
+                var relat = db.Relations.Where(x => (x.teacherIDFK == tea)).Select(y => y.subjectIDFK).ToList();
+                List<int> teacherRcourse = new List<int>();
+                foreach (int rel in relat)
                 {
-                    foreach (Relation relat in teacherRstudents)
-                    {
-                        if (relat.teacherIDFK == teacherR1[i]) teacherR2.Add(relat.subjectIDFK);
-                    }
+                    if (!teacherRcourse.Contains(rel)) teacherRcourse.Add(rel);
                 }
                 List<subject> subjects = new List<subject>();
                 var sub = db.Subjects.ToList();
-                for (int i = 0; i < teacherR2.Count; i++)
+                for (int i = 0; i < teacherRcourse.Count; i++)
                 {
                     foreach (subject s in sub)
                     {
-                        if (s.subjectID == teacherR2[i]) subjects.Add(s);
+                        if (s.subjectID == teacherRcourse[i]) subjects.Add(s);
                     }
                 }
-                dgvteacher.DataSource = subjects;
+                
+                dgvteacher.DataSource = subjects.Select(x => new { x.GraphicDesign, x.WebbDevelopment, x.Programming, x.DataBase }).ToList();
             }
 
             if (CBteacher.Checked)
             {
-                List<teacher> Teacher = db.Teachers.ToList();
-                List<int> teacherR1 = new List<int>();
-                string input2 = comteachersstudents.SelectedItem.ToString();
-                foreach (var teach in Teacher)
-                {                                 //Teacher's FirsName + '' + Teacher's LastName              Add teacher's id to the List
-                    if ($"{teach.teacherFirstName.ToString()} {teach.teacherLastName.ToString()}" == input2) teacherR1.Add(teach.teacherID);
+                int tea = db.Teachers.Where(x => (x.teacherFirstName + " " + x.teacherLastName) == comteachersstudents.SelectedItem.ToString()).Select(y => y.teacherID).FirstOrDefault();
 
-                }
-                List<Relation> teacherRstudents = db.Relations.ToList();
-                List<int> teacherR2 = new List<int>();
-                for (int i = 0; i < teacherR1.Count; i++)
+                var relat = db.Relations.Where(x => (x.teacherIDFK == tea)).Select(y => y.studentIDFK).ToList();
+                List<int> teacherRstudent = new List<int>();
+                foreach (int rel in relat)
                 {
-                    foreach (Relation relat in teacherRstudents)
-                    {
-                        if (relat.teacherIDFK == teacherR1[i]) teacherR2.Add(relat.studentIDFK);
-                    }
+                    if (!teacherRstudent.Contains(rel)) teacherRstudent.Add(rel);
                 }
+
                 List<student> students = new List<student>();
                 var stud = db.Students.ToList();
-                for (int i = 0; i < teacherR2.Count; i++)
+                for (int i = 0; i < teacherRstudent.Count; i++)
                 {
                     foreach (student st in stud)
                     {
-                        if (st.studentID == teacherR2[i]) students.Add(st);
+                        if (st.studentID == teacherRstudent[i]) students.Add(st);
                     }
                 }
-                dgvteacher.DataSource = students;
+
+                dgvteacher.DataSource = students.Select(x => new { x.studentID, x.studentFirstName, x.studentLastName }).ToList();
+
             }
         }
 
