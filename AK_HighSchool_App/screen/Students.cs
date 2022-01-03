@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -25,7 +25,7 @@ namespace AK_HighSchool_App.screen
             {
                 comage.Items.Add(i.ToString());
             }
-                      
+
             comstudycategory.Items.Add(category.graphicDesign.ToString());
             comstudycategory.Items.Add(category.webDevelopment.ToString());
             comstudycategory.Items.Add(category.programming.ToString());
@@ -77,52 +77,55 @@ namespace AK_HighSchool_App.screen
         {
             if (CBallstudents.Checked)
             {
-                dgvstudent.DataSource = db.Students.ToList();
+                dgvstudent.DataSource = db.Students.Select(x => new { x.studentID, x.studentFirstName, x.studentLastName, x.email, x.Gender, x.studentAge }).ToList();
                 
             }
             if (CBfirstname.Checked)
             {
-                dgvstudent.DataSource = db.Students.Where(x => x.studentFirstName == input1).ToList();
+                dgvstudent.DataSource = db.Students.Where(x => x.studentFirstName == input1).Select(x => new { x.studentID, x.studentFirstName, x.studentLastName, x.email, x.Gender, x.studentAge }).ToList();
             }
             if (CBlastname.Checked)
             {
-                dgvstudent.DataSource = db.Students.Where(x => x.studentLastName == input2).ToList();
+                dgvstudent.DataSource = db.Students.Where(x => x.studentLastName == input2).Select(x => new { x.studentID, x.studentFirstName, x.studentLastName, x.email, x.Gender, x.studentAge }).ToList();
             }
             if (CBage.Checked)
             {
-                dgvstudent.DataSource = db.Students.Where(x => x.studentAge == Convert.ToInt16(comage.SelectedItem.ToString())).ToList();
+                dgvstudent.DataSource = db.Students.Where(x => x.studentAge == Convert.ToInt16(comage.SelectedItem.ToString())).Select(x => new { x.studentID, x.studentFirstName, x.studentLastName, x.email, x.Gender, x.studentAge }).ToList();
             }
 
             if (CBstudycategory.Checked)
             {
                 List<subject> subb = db.Subjects.ToList();
-                List<int> Category1 = new List<int>();
-                string input3 = comstudycategory.SelectedItem.ToString();
+                List<int> courseRstudent = new List<int>();
+               
                 foreach (var sub in subb)
                 {
-                    if (sub.Category.ToString() == input3) Category1.Add(sub.subjectID);
+                    if (sub.Category.ToString() == comstudycategory.SelectedItem.ToString()) courseRstudent.Add(sub.subjectID);
 
                 }
                 List<Relation> CategoryRelation = db.Relations.ToList();
-
-                List<int> Category2 = new List<int>();
-                for (int i = 0; i < Category1.Count; i++)
+                List<int> courseRstudent2 = new List<int>();
+                for (int i = 0; i < courseRstudent.Count; i++)
                 {
                     foreach (Relation relat in CategoryRelation)
                     {
-                        if (relat.subjectIDFK == Category1[i]) Category2.Add(relat.studentIDFK);
+                        if (relat.subjectIDFK == courseRstudent[i])
+                            if (!courseRstudent2.Contains(relat.studentIDFK)) courseRstudent2.Add(relat.studentIDFK);
+
                     }
                 }
+
                 List<student> students = new List<student>();
                 var stud = db.Students.ToList();
-                for (int i = 0; i < Category2.Count; i++)
+                for (int i = 0; i < courseRstudent2.Count; i++)
                 {
                     foreach (student st in stud)
                     {
-                        if (st.studentID == Category2[i]) students.Add(st);
+                        if (st.studentID == courseRstudent2[i]) students.Add(st);
                     }
                 }
-                dgvstudent.DataSource = students;
+
+                dgvstudent.DataSource = students.Select(x => new { x.studentID, x.studentFirstName, x.studentLastName }).ToList();
 
 
             }
@@ -133,9 +136,11 @@ namespace AK_HighSchool_App.screen
                 List<int> Stype = new List<int>();
                 string input4 = comstudytype.SelectedItem.ToString();                
                 List<Relation> studyTypeRelation = db.Relations.ToList();
+               
                 foreach (Relation relat in studyTypeRelation)
                 {
-                    if (relat.StudyType.ToString() == input4) Stype.Add(relat.studentIDFK);
+                    if (relat.StudyType.ToString() == input4)
+                        if (!Stype.Contains(relat.studentIDFK)) Stype.Add(relat.studentIDFK);
                 }
 
                 List<student> students = new List<student>();
@@ -147,7 +152,7 @@ namespace AK_HighSchool_App.screen
                         if (st.studentID == Stype[i]) students.Add(st);
                     }
                 }
-                dgvstudent.DataSource = students;
+                dgvstudent.DataSource = students.Select(x => new { x.studentID, x.studentFirstName, x.studentLastName }).ToList();
 
 
             }
@@ -160,7 +165,8 @@ namespace AK_HighSchool_App.screen
                 List<Relation> gpaRelation = db.Relations.ToList();
                 foreach (Relation relat in gpaRelation)
                 {
-                    if (relat.GPA.ToString() == input5) gpaList.Add(relat.studentIDFK);
+                    if (relat.GPA.ToString() == input5) 
+                        if (!gpaList.Contains(relat.studentIDFK)) gpaList.Add(relat.studentIDFK);
                 }
 
                 List<student> students = new List<student>();
@@ -172,7 +178,7 @@ namespace AK_HighSchool_App.screen
                         if (st.studentID == gpaList[i]) students.Add(st);
                     }
                 }
-                dgvstudent.DataSource = students;
+                dgvstudent.DataSource = students.Select(x => new { x.studentID, x.studentFirstName, x.studentLastName }).ToList();
             }
 
             
