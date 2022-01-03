@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -72,7 +72,7 @@ namespace AK_HighSchool_App.screen
         {
             if (CBallcourses.Checked)
             {
-                dgvsubject.DataSource = db.Subjects.ToList();
+                dgvsubject.DataSource = db.Subjects.Select(x => new { x.GraphicDesign, x.WebbDevelopment, x.Programming, x.DataBase }).ToList();
             }
 
             if (CBbystudentsattending.Checked)
@@ -103,7 +103,7 @@ namespace AK_HighSchool_App.screen
                         if (st.studentID == courseR2[i]) students.Add(st);
                     }
                 }
-                dgvsubject.DataSource = students;
+                dgvsubject.DataSource = students.Select(x => new { x.studentID, x.studentFirstName, x.studentLastName, x.email, x.Gender, x.studentAge }).ToList();
             }
 
             if (CBastudentscourses.Checked)
@@ -134,7 +134,7 @@ namespace AK_HighSchool_App.screen
                         if (s.subjectID == studentR2[i]) subjects.Add(s);
                     }
                 }
-                dgvsubject.DataSource = subjects;
+                dgvsubject.DataSource = subjects.Select(x => new { x.GraphicDesign, x.WebbDevelopment, x.Programming, x.DataBase }).ToList();
             }
 
             
